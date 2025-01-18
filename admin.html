@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Activities</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .box {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .form {
+            width: 100%;
+        }
+
+        .inputbox {
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inputbox select, .inputbox input {
+            padding: 10px;
+            font-size: 1em;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .sub {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        .sub:hover {
+            opacity: 0.8;
+        }
+
+        .routine-container {
+            width: 100%;
+            max-height: 400px; /* Limit the max height for scrolling */
+            overflow-y: auto;
+            margin-top: 30px;
+        }
+
+        .routine-block {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .routine-block h2 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .editBtn, .deleteBtn {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .deleteBtn {
+            background-color: #f44336; /* Red color for delete */
+        }
+
+        .editBtn:hover, .deleteBtn:hover {
+            opacity: 0.8;
+        }
+
+        /* Media Query for Mobile */
+        @media screen and (max-width: 600px) {
+            .box {
+                padding: 15px;
+                margin: 0 10px;
+            }
+
+            .logo {
+                font-size: 1.5em;
+            }
+
+            .inputbox select, .inputbox input {
+                font-size: 0.9em;
+            }
+
+            .sub {
+                font-size: 1em;
+                padding: 12px;
+            }
+
+            .routine-block h2 {
+                font-size: 1.2em;
+            }
+
+            .editBtn, .deleteBtn {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="form">
+            <h2 class="logo">Zesty Admin</h2>
+            <p class="subtitle">Manage Activities</p>
+            
+            <form id="routineForm">
+                <h3>Update Routine</h3>
+                <div class="inputbox">
+                    <select id="day" required>
+                        <option value="saturday">Saturday</option>
+                        <option value="sunday">Sunday</option>
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday">Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        
+                    </select>
+                    <span>Day</span>
+                </div>
+                <div class="inputbox">
+                    <input type="text" id="subject" required>
+                    <span>Subject</span>
+                </div>
+                <div class="inputbox">
+                    <input type="text" id="time" required>
+                    <span>Time (e.g., 10:00 AM - 11:00 AM)</span>
+                </div>
+                <input type="submit" value="Update Routine" class="sub">
+                <input type="hidden" id="editId"> <!-- Hidden field to store the routine entry ID being edited -->
+            </form>
+        </div>
+
+        <div class="routine-container">
+            <div id="routineDisplay">
+                <h3>Current Routine</h3>
+                <div id="routineList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0Q3-U2HcoGpDnUgY0t_NsyNSvpyrWzx0",
+            authDomain: "routine-now.firebaseapp.com",
+            projectId: "routine-now",
+            storageBucket: "routine-now.appspot.com",
+            messagingSenderId: "830396870615",
+            appId: "1:830396870615:web:03c3a023de9e0f0ee52592"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const routineForm = document.getElementById("routineForm");
+        const routineList = document.getElementById("routineList");
+        const editIdInput = document.getElementById("editId");
+
+        // Add or update routine
+        routineForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const day = document.getElementById("day").value;
+            const subject = document.getElementById("subject").value;
+            const time = document.getElementById("time").value;
+            const editId = editIdInput.value;
+
+            if (editId) {
+                // If there's an editId, update the specific routine entry
+                const routineRef = ref(db, `routine/${day}/${editId}`);
+                update(routineRef, {
+                    subject,
+                    time
+                }).then(() => {
+                    alert("Routine updated successfully!");
+                    fetchRoutine(); // Refresh routine display
+                    resetForm(); // Reset the form
+                });
+            } else {
+                // Otherwise, create a new routine entry
+                const routineRef = ref(db, `routine/${day}`);
+                get(routineRef).then((snapshot) => {
+                    let dayRoutine = snapshot.exists() ? snapshot.val() : [];
+                    dayRoutine.push({ subject, time });
+                    set(routineRef, dayRoutine).then(() => {
+                        alert("Routine added successfully!");
+                        fetchRoutine(); // Refresh routine display
+                        resetForm(); // Reset the form
+                    });
+                });
+            }
+        });
+
+        // Fetch and display routine
+        function fetchRoutine() {
+            const routineRef = ref(db, "routine");
+            onValue(routineRef, (snapshot) => {
+                routineList.innerHTML = ""; // Clear the previous routine
+                const routine = snapshot.val();
+                for (let day in routine) {
+                    const dayBlock = document.createElement("div");
+                    dayBlock.className = "routine-block";
+                    dayBlock.innerHTML = `<h2>${day.toUpperCase()}</h2>`;
+                    routine[day].forEach((entry, index) => {
+                        dayBlock.innerHTML += `
+                            <p><strong>${entry.subject}</strong>: ${entry.time}</p>
+                            <button class="editBtn" data-day="${day}" data-id="${index}" data-subject="${entry.subject}" data-time="${entry.time}">Edit</button>
+                            <button class="deleteBtn" data-day="${day}" data-id="${index}">Delete</button>
+                        `;
+                    });
+                    routineList.appendChild(dayBlock);
+                }
+
+                // Add event listeners to Edit buttons
+                const editButtons = document.querySelectorAll(".editBtn");
+                editButtons.forEach((button) => {
+                    button.addEventListener("click", handleEdit);
+                });
+
+                // Add event listeners to Delete buttons
+                const deleteButtons = document.querySelectorAll(".deleteBtn");
+                deleteButtons.forEach((button) => {
+                    button.addEventListener("click", handleDelete);
+                });
+            });
+        }
+
+        // Handle editing routine
+        function handleEdit(e) {
+            const button = e.target;
+            const day = button.dataset.day;
+            const id = button.dataset.id;
+            const subject = button.dataset.subject;
+            const time = button.dataset.time;
+
+            // Set form values for editing
+            document.getElementById("day").value = day;
+            document.getElementById("subject").value = subject;
+            document.getElementById("time").value = time;
+            editIdInput.value = id; // Set the hidden input to the ID of the entry being edited
+        }
+
+        // Handle deleting routine
+        function handleDelete(e) {
+            const button = e.target;
+            const day = button.dataset.day;
+            const id = button.dataset.id;
+
+            const routineRef = ref(db, `routine/${day}`);
+            get(routineRef).then((snapshot) => {
+                const dayRoutine = snapshot.exists() ? snapshot.val() : [];
+                dayRoutine.splice(id, 1); // Remove the specific routine entry
+                set(routineRef, dayRoutine).then(() => {
+                    alert("Routine deleted successfully!");
+                    fetchRoutine(); // Refresh routine display
+                });
+            });
+        }
+
+        // Reset form after updating or adding a routine
+        function resetForm() {
+            document.getElementById("subject").value = '';
+            document.getElementById("time").value = '';
+            document.getElementById("editId").value = ''; // Reset the edit ID
+        }
+
+        // Load routine on page load
+        fetchRoutine();
+    </script>
+</body>
+</html>
