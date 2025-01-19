@@ -1,1 +1,294 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #00796b;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* Day Selection */
+.day-selection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.day-card {
+    background-color: #00796b;
+    color: white;
+    font-size: 1.4rem;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    text-align: center;
+}
+
+.day-card:hover {
+    background-color: #004d40;
+}
+
+.day-card:active {
+    background-color: #004d40;
+}
+
+/* Routine Display */
+.routine-display {
+    margin-top: 20px;
+}
+
+#selectedDay {
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.routine-block {
+    background-color: #ffffff;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+.routine-block p {
+    margin: 5px 0;
+}
+
+/* Footer Section */
+footer {
+    margin-top: 40px;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .day-selection {
+        grid-template-columns: 1fr 1fr;  /* Two columns for smaller screens */
+    }
+
+    .day-card {
+        font-size: 1.2rem;
+        padding: 15px;
+    }
+
+    #selectedDay {
+        font-size: 1.6rem;
+    }
+
+    .routine-block p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .day-selection {
+        grid-template-columns: 1fr; /* Stack day cards for very small screens */
+    }
+
+    .day-card {
+        font-size: 1.1rem;
+        padding: 12px;
+    }
+
+    #selectedDay {
+        font-size: 1.4rem;
+    }
+
+    .routine-block p {
+        font-size: 0.9rem;
+    }
+}
+
+
+
+
+#downloadPdfBtn {
+    background-color: #172fb4da;
+    color: white;
+    font-size: 18px;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+#downloadPdfBtn i {
+    margin-right: 10px; /* Space between the icon and text */
+}
+
+#downloadPdfBtn:hover {
+    background-color: #0c3092;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for the logo in the header */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.logo {
+    width: 50px; /* Adjust the size of the logo */
+    height: auto;
+}
+
+h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+
+
+
+/* General container styles */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Header Section */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 20px;
+    background-color: #f8f8f8;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Container */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Logo Styling */
+.logo {
+    width: 60px;  /* Adjust logo size */
+    height: auto;
+}
+
+/* Header Title */
+h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    padding-top: 20px;
+}
+
+/* Day Selection (Ensuring it looks good on mobile too) */
+.day-selection {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between day cards */
+    margin-top: 20px;
+    flex-wrap: wrap;  /* This ensures it wraps if necessary on smaller screens */
+}
+
+/* Day Cards */
+.day-card {
+    padding: 10px 20px;
+    background-color: #3045bbe3;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.day-card:hover {
+    background-color: #0b2180;
+    color: white;
+}
+
+/* Routine Display and PDF button styles (adjust if necessary) */
+.routine-display {
+    margin-top: 20px;
+}
+
+.pdf-download {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pdf-download button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #1815af;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.pdf-download button:hover {
+    background-color: #4430b6;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .logo-container {
+        justify-content: center;
+        margin-bottom: 10px; /* Space between logo and title */
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .day-selection {
+        flex-direction: row;  /* Align day cards horizontally */
+        justify-content: center;
+    }
+
+    .day-card {
+        margin: 5px; /* Small margin between the day cards */
+    }
+}
 
