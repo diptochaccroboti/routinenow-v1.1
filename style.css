@@ -136,7 +136,7 @@ footer {
 
 
 #downloadPdfBtn {
-    background-color: #27ae60;
+    background-color: #172fb4da;
     color: white;
     font-size: 18px;
     padding: 12px 30px;
@@ -154,7 +154,7 @@ footer {
 }
 
 #downloadPdfBtn:hover {
-    background-color: #2ecc71;
+    background-color: #0c3092;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -230,7 +230,7 @@ h1 {
 /* Day Cards */
 .day-card {
     padding: 10px 20px;
-    background-color: #a6e005;
+    background-color: #3045bbe3;
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
@@ -239,7 +239,7 @@ h1 {
 }
 
 .day-card:hover {
-    background-color: #4CAF50;
+    background-color: #0b2180;
     color: white;
 }
 
@@ -256,14 +256,14 @@ h1 {
 .pdf-download button {
     padding: 10px 20px;
     font-size: 1rem;
-    background-color: #4CAF50;
+    background-color: #1815af;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 .pdf-download button:hover {
-    background-color: #45a049;
+    background-color: #4430b6;
 }
 
 /* Responsive Styles */
