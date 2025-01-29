@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- Add Font Awesome for icons -->
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -17,38 +17,61 @@
         <header>
             <div class="logo-container">
                 <img src="1.png" alt="Routine Now Logo" class="logo">
-                <h1>Routine Now?(60_F)</h1>
+                <h1>Routine Now? (60_F)</h1>
             </div>
         </header>
 
         <!-- Day Selection -->
-        <div class="day-selection">
+        <section class="day-selection">
             <div class="day-card" data-day="saturday">Saturday</div>
             <div class="day-card" data-day="sunday">Sunday</div>
             <div class="day-card" data-day="monday">Monday</div>
             <div class="day-card" data-day="tuesday">Tuesday</div>
             <div class="day-card" data-day="wednesday">Wednesday</div>
             <div class="day-card" data-day="thursday">Thursday</div>
-            
-        </div>
+        </section>
 
         <!-- Routine Display Section -->
-        <div id="routineDisplay" class="routine-display">
+        <section id="routineDisplay" class="routine-display">
             <h2 id="selectedDay">Select a day to view the routine</h2>
             <div id="routineList"></div>
-        </div>
+        </section>
 
-        <!-- PDF Download Button -->
-        <div class="pdf-download">
+        <!-- PDF Download Section -->
+        <section class="pdf-download">
             <button id="downloadPdfBtn">
-                <i class="fas fa-file-pdf"></i> PDF Routine
+                <i class="fas fa-file-pdf"></i> Download PDF
             </button>
             <p>Download</p>
+        </section>
+
+        <!-- Teacher Info Section -->
+        <section class="teacher-info">
+            <button id="teacherInfoBtn">
+                <i class="fas fa-chalkboard-teacher"></i> Teacher Info
+            </button>
+        </section>
+
+        <!-- Teacher Info Modal -->
+        <div id="teacherModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Teacher Information</h2>
+                    <span id="closeModal" class="modal-close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <ul id="teacherList">
+                        <li><span>Name:</span> John Doe, <span>Room:</span> 101, <span>Phone:</span> 123-456-7890</li>
+                        <li><span>Name:</span> Jane Smith, <span>Room:</span> 102, <span>Phone:</span> 987-654-3210</li>
+                        <li><span>Name:</span> Mike Johnson, <span>Room:</span> 103, <span>Phone:</span> 456-789-0123</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- Footer Section -->
         <footer>
-            <p>&copy; 2025 ISOLATE. All rights reserved.</p>
+            <p>&copy; 2025 Routine Now. All rights reserved.</p>
         </footer>
     </div>
 
@@ -74,13 +97,13 @@
 
         let allRoutineData = {}; // Object to store routine data for all days
 
-        // Fetch routine data for all days but don't display until the PDF download
-        const daysOfWeek = ["saturday","sunday","monday", "tuesday", "wednesday", "thursday"];
+        // Fetch routine data for all days
+        const daysOfWeek = ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday"];
         daysOfWeek.forEach((day) => {
             const routineRef = ref(db, `routine/${day}`);
             onValue(routineRef, (snapshot) => {
                 if (snapshot.exists()) {
-                    allRoutineData[day] = snapshot.val(); // Store the fetched routine data for this day
+                    allRoutineData[day] = snapshot.val();
                 }
             });
         });
@@ -91,7 +114,6 @@
                 const selectedDay = card.dataset.day;
                 selectedDayHeader.textContent = selectedDay.charAt(0).toUpperCase() + selectedDay.slice(1);
 
-                // Get routine data from Firebase for the selected day
                 const routineData = allRoutineData[selectedDay] || [];
                 routineList.innerHTML = ""; // Clear previous routine
 
@@ -113,71 +135,76 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Add "Section: 60_F" at the top-center of the PDF
             doc.setFontSize(14);
             doc.setFont("helvetica", "normal");
             doc.text("Section: 60_F", doc.internal.pageSize.width / 2, 20, { align: 'center' });
 
-            // Title of the PDF
             doc.setFontSize(20);
             doc.setFont("helvetica", "bold");
             doc.text("Weekly Routine", 20, 30);
 
-            // Set basic font and size for the table
             doc.setFont("helvetica", "normal");
             doc.setFontSize(12);
 
-            let yOffset = 40; // Adjust for header space
+            let yOffset = 40;
 
-            // Adding borders and sections for each day
             daysOfWeek.forEach((day) => {
-                const dayRoutine = allRoutineData[day]; // Use the data stored earlier
+                const dayRoutine = allRoutineData[day];
 
                 if (dayRoutine && dayRoutine.length > 0) {
-                    // Draw a simple border around each day's section
                     doc.setLineWidth(0.5);
-                    doc.rect(20, yOffset - 5, 180, 10); // Outer border for the day header
+                    doc.rect(20, yOffset - 5, 180, 10);
 
-                    // Set header for each day
-                    doc.setTextColor(255, 255, 255); // White text for day header
-                    doc.setFillColor(0, 0, 128); // Dark Blue background for day name
-                    doc.rect(20, yOffset - 5, 180, 10, 'F'); // Fill the header with color
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(14); // Increase font size for day header
-                    doc.text(day.charAt(0).toUpperCase() + day.slice(1), 25, yOffset + 2); // Adjusted to move day name upwards
+                    doc.setFillColor(0, 0, 128);
+                    doc.rect(20, yOffset - 5, 180, 10, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(14);
+                    doc.text(day.charAt(0).toUpperCase() + day.slice(1), 25, yOffset + 2);
 
-                    yOffset += 10; // Space for day header
+                    yOffset += 10;
 
-                    // Add table header for Subject and Time
-                    doc.setTextColor(0, 0, 0); // Black text for table content
+                    doc.setTextColor(0, 0, 0);
                     doc.text("Subject", 20, yOffset);
                     doc.text("Time", 120, yOffset);
 
-                    // Add a small line separator
                     doc.setLineWidth(0.5);
-                    doc.line(20, yOffset + 2, 200, yOffset + 2); // Horizontal line
+                    doc.line(20, yOffset + 2, 200, yOffset + 2);
 
-                    yOffset += 8; // Space after table header
+                    yOffset += 8;
 
-                    // Add table rows for each routine entry
                     dayRoutine.forEach((entry) => {
                         doc.text(entry.subject, 20, yOffset);
                         doc.text(entry.time, 120, yOffset);
-
-                        // Add line separators after each row
-                        doc.line(20, yOffset + 2, 200, yOffset + 2); // Row separator
-                        yOffset += 8; // Space for next row
+                        doc.line(20, yOffset + 2, 200, yOffset + 2);
+                        yOffset += 8;
                     });
 
-                    yOffset += 12; // Space after each day's routine
+                    yOffset += 12;
                 }
             });
 
-            // Save the generated PDF
             doc.save("weekly_routine.pdf");
+        });
+
+        // Teacher Info Modal Logic
+        const teacherInfoBtn = document.getElementById('teacherInfoBtn');
+        const teacherModal = document.getElementById('teacherModal');
+        const closeModal = document.getElementById('closeModal');
+
+        teacherInfoBtn.addEventListener('click', () => {
+            teacherModal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', () => {
+            teacherModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === teacherModal) {
+                teacherModal.style.display = 'none';
+            }
         });
     </script>
 </body>
-
 </html>
-
